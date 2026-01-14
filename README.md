@@ -1,5 +1,4 @@
-Building a Neural Network in C to guess the handwitten number.
-Dataset from MNIST
+# Building a Neural Network in C to guess the handwitten number.
 
 Im using 784 input pixels, 100 neuons in the hidden layer, and 10 in the output for the ints 0-9.
 
@@ -13,10 +12,11 @@ For optimization im using Stochastic Gradien Descent for one sample at a time, w
 
 
 
-For the future i want to:
-\begin{itemize}
-\item Train on data the network hansnt seen 
-\item Implement Batch trainging
-\item Learning rate scheduling (changing the learning rate over time)
-\item More hidden layers for deeper learning
-\end{itemize}
+## For the future i want to:
+- [ ] Train on data the network hansnt seen 
+- [ ] Implement Batch trainging
+- [ ] Learning rate scheduling (changing the learning rate over time)
+- [ ] More hidden layers for deeper learning
+
+
+Dataset from MNIST
