@@ -14,6 +14,7 @@ For optimization im using Stochastic Gradient Descent for one sample at a time, 
 
 ## For the future i want to:
 - [ ] Train on data the network hansnt seen 
+- [ ] Allow input from my own drawings
 - [ ] Implement Batch trainging
 - [ ] Learning rate scheduling (changing the learning rate over time)
 - [ ] More hidden layers for deeper learning
