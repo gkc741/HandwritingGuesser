@@ -13,6 +13,7 @@ For optimization im using Stochastic Gradient Descent for one sample at a time, 
 
 
 ## For the future i want to:
+- [ ] Take binary files as input instead of CSV for faster reading
 - [ ] Train on data the network hansnt seen 
 - [ ] Allow input from my own drawings
 - [ ] Implement Batch trainging
