@@ -4,7 +4,7 @@ Im using 784 input pixels, 100 neuons in the hidden layer, and 10 in the output 
 
 Im initializing their weights and bias' with random values, weights = [-0.01, 0.01], bias = [-0.001, 0.001]
 
-Usin ReLU on the hidden layer, and softmax on the output layer.
+Using ReLU on the hidden layer, and softmax on the output layer.
 
 Using Categorial Corss-Entropy Loss for the 10 classes i have to calculate the loss.
 
