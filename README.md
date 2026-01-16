@@ -19,7 +19,7 @@ For optimization im using Stochastic Gradient Descent for one sample at a time, 
 - [ ] Implement Batch trainging
 - [ ] Learning rate scheduling (changing the learning rate over time)
 - [ ] More hidden layers for deeper learning
-- [ ] Expand to letters aswell
+- [ ] Expand to letters aswell if i can find such a dataset
 
 
 Dataset from MNIST
