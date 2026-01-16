@@ -13,6 +13,7 @@ For optimization im using Stochastic Gradient Descent for one sample at a time, 
 
 
 ## For the future i want to:
+- [ ] Separate training and Inference 
 - [ ] Take binary files as input instead of CSV for faster reading
 - [ ] Skipping softmax at Inference and using argmax for optimization 
 - [ ] Train on data the network hansnt seen 
