@@ -7,3 +7,9 @@ makefile
 
 #Ignore folder
 archive/
+
+# Ignore build output without extension
+nn_layers
+
+# Ignore buildt files
+*.o
