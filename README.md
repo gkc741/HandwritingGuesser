@@ -18,8 +18,8 @@ For optimization im using Stochastic Gradient Descent for one sample at a time, 
 - [x] Skipping softmax and loss calc at Inference and using argmax for optimization 
 - [x] Implement Batch trainging  (Was worse)
 - [x] Learning rate scheduling (changing the learning rate over time)
+- [x] Move malloc/free out of the loop so it isnt called 60.000+ times
 ## For the future i want to:
-- [ ] Move malloc/free out of the loop so it isnt called 60.000+ times
 - [ ] Expand to letters aswell if i can find such a dataset
 - [ ] Allow input from my own drawings
 - [ ] More layers generalized
