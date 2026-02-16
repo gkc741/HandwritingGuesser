@@ -13,3 +13,8 @@ nn_layers
 
 # Ignore buildt files
 *.o
+
+# Ignore old version
+neuron.c
+neuron.h
+neuron
