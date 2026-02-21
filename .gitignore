@@ -10,6 +10,7 @@ archive/
 
 # Ignore build output without extension
 nn_layers
+train
 
 # Ignore buildt files
 *.o
@@ -18,3 +19,7 @@ nn_layers
 neuron.c
 neuron.h
 neuron
+
+
+# Ignore bin files
+*.bin
