@@ -1,4 +1,4 @@
-# Building a Neural Network in C to guess the handwitten number.
+# Building a Neural Network in C to guess the handwitten number
 
 Im using 784 input pixels, 100 neuons in the hidden layer, and 10 in the output for the ints 0-9. This is in my case the functions aren't hardcoded.
 
@@ -10,16 +10,18 @@ Using Categorial Corss-Entropy Loss for the 10 classes i have to calculate the l
 
 For optimization im using Stochastic Gradient Descent for one sample at a time, with a fixed learning rate of 0.01 rn.
 
+## Completed improvements
 
-## Completed improvements:
-- [x] Separate training and Inference 
+- [x] Separate training and Inference
 - [x] Take binary files as input instead of CSV for faster reading
 - [x] He initialization for ReLU
-- [x] Skipping softmax and loss calc at Inference and using argmax for optimization 
+- [x] Skipping softmax and loss calc at Inference and using argmax for optimization
 - [x] Implement Batch trainging  (Was worse)
 - [x] Learning rate scheduling (changing the learning rate over time)
 - [x] Move malloc/free out of the loop so it isnt called 60.000+ times
-## For the future i want to:
+
+## For the future i want to
+
 - [ ] Expand to letters aswell if i can find such a dataset
 - [ ] Allow input from my own drawings
 - [ ] More layers generalized
