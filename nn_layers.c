@@ -3,20 +3,10 @@
 #include <stdint.h>
 #include <math.h>
 #include <omp.h>
+#include "nn_layers.h"
 
 
-typedef struct layer{
-    float* weights; // Long flattended list of weights for every neruon in the layer
-    float* bias; // the bias
-    int nr_of_neurons;  // the size of the out list basically how many neurons
-    int in_size; // the size of the input list
-}layer;
-/*
-The weight list is a flattended list so that means its a 2d array in flattended into row-major 1d list
-this means i acces it instead of [i][j] i do, [i * (weight pr neuron / in_size) + j]
 
-The bias is just a long list of all the biases of the neurons
-*/
 
 
 // I want to create a layer with random weights and bias
@@ -59,14 +49,6 @@ static uint32_t read_be_u32(FILE *f){
     // CONVERT BIG EDIAN TO SMALL EDIAN
     return ((uint32_t)bytes[0] << 24) | ((uint32_t)bytes[1] << 16) | ((uint32_t)bytes[2] << 8) | (uint32_t)bytes[3];
 }
-
-
-typedef struct dataset{
-    float* data;  // flattend list of datapoint (pixel values)
-    int data_size;  // rows * colms (so the number of pixels)
-    uint8_t* labels;  // LIST OF THE ACTAUAL VALUE OF THE PIC
-    int nr_of_images; 
-}dataset;
 
 
 struct dataset read_images(const char* file){
@@ -162,13 +144,6 @@ void free_dataset(struct dataset dataset){
 inline float relu(float x){  // INLINE MAKES IT SO WHEN I CALL IT IT JUST IMPUTS THE MATH IN WHERE I CALL IT
     return x > 0 ? x : 0;   // IS X > 0 IF YES RETURN X ELSE RETURN 0 (CALLED TENARY OPERATOR)
 }
-
-
-
-typedef struct {
-    float* output_list;
-    int size;
-}output;
 
 
 void calc_hidden_layer_output(struct dataset dataset, struct layer hidden_layer, int img_indx, output* input){
@@ -319,14 +294,6 @@ void update_hidden_weights_and_bias(layer* hidden_layer, float* error_list_of_hi
     return;
 }
 
-typedef struct{
-    output hidden_output;
-    output output_output;
-    output probs;
-    float* error_output;
-    float* error_hidden;
-} workspace;
-
 void free_workspace(workspace* ws){
     free(ws->hidden_output.output_list);
     free(ws->output_output.output_list);
@@ -334,7 +301,6 @@ void free_workspace(workspace* ws){
     free(ws->error_output);
     free(ws->error_hidden);
 }
-
 
 float train_NN(dataset dataset, layer* hidden_layer, layer* output_layer, float eta){
     float accuracy = 0.0;
@@ -381,11 +347,6 @@ float train_NN(dataset dataset, layer* hidden_layer, layer* output_layer, float 
     return accuracy;
 }
 
-typedef struct{
-    output hidden_output;
-    output output_output;
-}test_workspace;
-
 float test_on_data(dataset dataset, layer* hidden_layer, layer* output_layer){
     float accuracy = 0.0;
 
@@ -407,48 +368,68 @@ float test_on_data(dataset dataset, layer* hidden_layer, layer* output_layer){
     return accuracy;
 }
 
+void save_data(dataset ds, layer* hidden_layer, layer* output_layer){
+    Header h = {ds.data_size, hidden_layer->nr_of_neurons, output_layer->nr_of_neurons};
+    FILE *f = fopen("layers.bin", "wb");
+    fwrite(&h, sizeof(h), 1, f);
+    fwrite(hidden_layer->weights, sizeof(float), hidden_layer->in_size * hidden_layer->nr_of_neurons, f);
+    fwrite(hidden_layer->bias, sizeof(float), hidden_layer->nr_of_neurons, f);
 
-
-int main(){
-    srand(13);
-
-    printf("\n==== LOADING TRAINING DATA ====\n");
-    dataset ds = read_data("archive/bin_data/train/train-images.idx3-ubyte", "archive/bin_data/train/train-labels.idx1-ubyte");
-
-
-    printf("\n==== LOADING TEST DATA ====\n");
-    dataset test_data = read_data("archive/bin_data/test/t10k-images.idx3-ubyte", "archive/bin_data/test/t10k-labels.idx1-ubyte");
-
-
-    int nr_of_neurons = 200;
-    int nr_of_input = ds.data_size;
-
-    layer hidden_layer = create_ran_layer(nr_of_neurons, nr_of_input);
-    layer output_layer = create_ran_layer(10, hidden_layer.nr_of_neurons);
-
-    float eta = 0.02;
-
-
-    // KEEP BATCH AT 1 BECAUSE update_hidden_weights_and_bias DOSENT WORK WITH THE i INPUT PROPERRLY
+    fwrite(output_layer->weights, sizeof(float), output_layer->in_size * output_layer->nr_of_neurons, f);
+    fwrite(output_layer->bias, sizeof(float), output_layer->nr_of_neurons, f);
     
-    int epochs = 20;
+    fclose(f);
+    printf("Saved Data to layers.bin\n");
+}
 
-    printf("\n==== TRAINING AND TESTING====\n");
-    for(int run = 0; run < epochs; run++){
-        float accuracy_train = train_NN(ds, &hidden_layer, &output_layer, eta);
-        float accuracy = test_on_data(test_data, &hidden_layer, &output_layer);
-        // printf("Accuracy: %.2f%%\n", accuracy_train);
-        // printf("accyracy test: %.2f%%\n\n", accuracy);
-        eta *= 0.95;
-        printf("epoch %d: train=%.2f%%, test=%.2f%%, diff=%.2f, eta=%.5f\n", run + 1, accuracy_train, accuracy, accuracy_train - accuracy, eta);
+void predict_drawing(float* input, layer* hidden_layer, layer* output_layer, float* out, int* digit){
+    // Allocate temporary outputs
+    output hidden_out = {0};
+    output output_out = {0};
+    
+    hidden_out.size = hidden_layer->nr_of_neurons;
+    output_out.size = output_layer->nr_of_neurons;
+    
+    hidden_out.output_list = malloc(hidden_layer->nr_of_neurons * sizeof(float));
+    output_out.output_list = malloc(output_layer->nr_of_neurons * sizeof(float));
+    
+    // Forward pass with a dummy dataset pointer (only need the input itself)
+    // Manually do what calc_hidden_layer_output does
+    float temp;
+    for(int j = 0; j < hidden_layer->nr_of_neurons; j++){
+        temp = hidden_layer->bias[j];
+        for(int i = 0; i < hidden_layer->in_size; i++){
+            temp += hidden_layer->weights[j * hidden_layer->in_size + i] * input[i];
+        }
+        hidden_out.output_list[j] = relu(temp);
     }
     
+    // Output layer
+    for(int i = 0; i < output_layer->nr_of_neurons; i++){
+        temp = output_layer->bias[i];
+        for(int j = 0; j < output_layer->in_size; j++){
+            temp += output_layer->weights[i * output_layer->in_size + j] * hidden_out.output_list[j];
+        }
+        output_out.output_list[i] = temp;
+    }
     
+    // Softmax
+    calc_softmax_prob(&output_out, &output_out);
     
-    free_layer(hidden_layer);
-    free_layer(output_layer);
-    free_dataset(test_data);
-    free_dataset(ds);
-
-    return 0;
+    // Copy probabilities to output if needed
+    if(out){
+        for(int i = 0; i < output_layer->nr_of_neurons; i++){
+            out[i] = output_out.output_list[i];
+        }
+    }
+    
+    // Get prediction
+    int pred = argmax(output_out);
+    
+    if(digit){
+        *digit = pred;
+    }
+    
+    free(hidden_out.output_list);
+    free(output_out.output_list);
 }
