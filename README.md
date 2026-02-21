@@ -19,11 +19,12 @@ For optimization im using Stochastic Gradient Descent for one sample at a time, 
 - [x] Implement Batch trainging  (Was worse)
 - [x] Learning rate scheduling (changing the learning rate over time)
 - [x] Move malloc/free out of the loop so it isnt called 60.000+ times
+- [x] Allow input from my own drawings
+- [x] Made a nice GUI to interact with it
 
 ## For the future i want to
 
 - [ ] Expand to letters aswell if i can find such a dataset
-- [ ] Allow input from my own drawings
 - [ ] More layers generalized
 - [ ] Dropout regularization (layer-wise)
 - [ ] SGD with momentum (0.9) for better convergence
