@@ -1,8 +1,6 @@
 #include <stdlib.h>
-#include <stdint.h>
-#include <assert.h>
 #include <stdio.h>
-#include <string.h>
+#include <stdint.h>
 #include <math.h>
 #include <omp.h>
 
@@ -98,7 +96,11 @@ struct dataset read_images(const char* file){
     uint32_t value = 0;
     value = fread(data, sizeof(uint8_t), rows * cols * images, f);
     printf("read %u points of data\n", value);
-    assert(value == images * rows * cols);
+    
+    if(value != images * rows * cols){
+        fprintf(stderr, "Read wrong amount of data\n");
+        exit(EXIT_FAILURE);
+    }
     
     
     // NORMALIZE THE VALUES
@@ -130,7 +132,11 @@ uint8_t* read_labels(const char* file){
     // READ VALUES
     value = fread(data, sizeof(uint8_t), images, f);
     printf("read %u img labels\n", value);
-    assert(value == images);
+    
+    if(value != images){
+        fprintf(stderr, "Read wrong amount of data\n");
+        exit(EXIT_FAILURE);
+    }
 
     fclose(f);
     return data;
