@@ -97,7 +97,7 @@ void LoadData(const char* filepath, Header* h, layer* hidden_layer, layer* outpu
 
 
 void CenterGridToInput(float* input){
-    // Find center of mass
+    // first i have to find center off mass
     float sum = 0.0f;
     float cx = 0.0f;
     float cy = 0.0f;
@@ -119,13 +119,12 @@ void CenterGridToInput(float* input){
     cx /= sum;
     cy /= sum;
     
-    // Calculate shift to center
-    int shift_x = (int)(14 - cx);
+    int shift_x = (int)(14 - cx); // 14 is half of 28
     int shift_y = (int)(14 - cy);
     
-    // Create centered version directly in input
+
     memset(input, 0, 784 * sizeof(float));
-    
+
     for(int y = 0; y < GRID; y++){
         for(int x = 0; x < GRID; x++){
             int new_x = x + shift_x;
@@ -168,7 +167,6 @@ int main(){
             
             paintGaussian(gx, gy, brushSize);
             
-            // Center and convert to input
             CenterGridToInput(input);
             
             predict_drawing(input, &hidden_layer, &output_layer, probs, &prediction);
