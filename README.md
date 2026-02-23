@@ -24,7 +24,7 @@ For optimization im using Stochastic Gradient Descent for one sample at a time, 
 
 ## For the future i want to
 
-- [ ] Expand to letters aswell if i can find such a dataset
+- [ ] Expand to letters aswell using the EMNIST dataset
 - [ ] More layers generalized
 - [ ] Dropout regularization (layer-wise)
 - [ ] SGD with momentum (0.9) for better convergence
