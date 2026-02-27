@@ -42,10 +42,10 @@ typedef struct{
 } test_workspace;
 
 typedef struct {
-    int input;
-    int hidden;
-    int output;
-} Header;
+    uint32_t input;
+    uint32_t hidden;
+    uint32_t output; 
+} Header; // uint32_t to make sure padding is the same on every machine
 
 // Layer creation and cleanup
 struct layer create_ran_layer(int nr_of_neurons, int nr_of_inputs);

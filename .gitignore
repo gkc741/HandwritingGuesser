@@ -19,7 +19,8 @@ train
 neuron.c
 neuron.h
 neuron
-
+benchmark
+benchmark.c
 
 # Ignore bin files
 *.bin

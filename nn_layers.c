@@ -8,7 +8,6 @@
 
 
 
-
 // I want to create a layer with random weights and bias
 struct layer create_ran_layer(int nr_of_neurons, int nr_of_inputs){
     struct layer n;
@@ -148,23 +147,33 @@ inline float relu(float x){  // INLINE MAKES IT SO WHEN I CALL IT IT JUST IMPUTS
 
 void calc_hidden_layer_output(struct dataset dataset, struct layer hidden_layer, int img_indx, output* input){
     input->size = hidden_layer.nr_of_neurons;
+    int in_size = hidden_layer.in_size;
     
+    float *restrict weights = hidden_layer.weights;
+    float *restrict output = input->output_list;
+    float *restrict bias = hidden_layer.bias;
+
     float temp;
     // I NEED TO TIMES THE INPUT BY THE WEIGHTS
     // BUT THE INPUT IS 784 LONG AND THE WEIGHTS IS 784 * NR_OF_NEURONS
     // I NEED FOR EVERY INPUT TIMES IT BY WEIGHTS AND THEN MOVE WEIGHTS 784 WHICH IS THE LENGTH OF ONE NEURONS WEIGHTS
-    float* image_data = &dataset.data[img_indx * dataset.data_size];
+    float *restrict image_data = &dataset.data[img_indx * dataset.data_size];
 
     #pragma omp parallel for private(temp)  // improveed it from 14 to 12 sec
     for(int j = 0; j < hidden_layer.nr_of_neurons; j++){ // so for every neuron
-        temp = hidden_layer.bias[j];
-        for(int i = 0; i < hidden_layer.in_size; i++){  // in size should be the dataset row * cols
-            // basically for every dataset item for every neuron
-            temp += hidden_layer.weights[j * hidden_layer.in_size + i] * image_data[i];
+        temp = bias[j];
+        float *restrict row = &weights[j * in_size];
+            #pragma omp simd reduction(+:temp)
+            for (int i = 0; i < in_size; i++){
+                temp += row[i] * image_data[i];
+            }
+            output[j] = relu(temp);
         }
-        input->output_list[j] = relu(temp);
     }
-}
+
+
+
+
 
 
 void calc_output_layer_output(float* output_of_hidden_layer, struct layer output_layer, output* input){
@@ -172,7 +181,6 @@ void calc_output_layer_output(float* output_of_hidden_layer, struct layer output
 
     float temp;
     // I NEED TO SAY OUTPUT = INPUT(WHICH IS OUTPUT OF HIDDEN LAYER) @ WEIGHTS + BIAS
-    #pragma omp parallel for private(temp)
     for(int i = 0; i < output_layer.nr_of_neurons; i++){
         temp = output_layer.bias[i];
         for(int j = 0; j < output_layer.in_size; j++){
@@ -271,7 +279,7 @@ void hidden_layer_errors(output hidden_layer_output, layer output_layer, float* 
 
 void update_output_weights_and_bias(layer* output_layer, float* error_list_of_output, float eta, output hidden_layer_output){
     // for every neuron (10)
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for(int i = 0; i < output_layer->nr_of_neurons; i++){
         // for every weight of every neuron (100)
         for(int j = 0; j < output_layer->in_size; j++){
@@ -283,13 +291,22 @@ void update_output_weights_and_bias(layer* output_layer, float* error_list_of_ou
 }
 
 
-void update_hidden_weights_and_bias(layer* hidden_layer, float* error_list_of_hidden, float eta, float* avg_pixl_values){
+void update_hidden_weights_and_bias(layer* hidden_layer, float *restrict error_list_of_hidden, float eta, float *restrict avg_pixl_values){
+    int in_size = hidden_layer->in_size;
+    
+    float *restrict bias = hidden_layer->bias;
+    float *restrict weights = hidden_layer->weights;
+    
     #pragma omp parallel for 
     for(int i = 0; i < hidden_layer->nr_of_neurons; i++){
-        for(int j = 0; j < hidden_layer->in_size; j++){
-            hidden_layer->weights[i * hidden_layer->in_size + j] -= eta * error_list_of_hidden[i] * avg_pixl_values[j];
+        float* restrict row = &weights[i * in_size];
+        float delta = eta * error_list_of_hidden[i];
+
+        #pragma omp simd
+        for(int j = 0; j < in_size; j++){
+            row[j] -= delta * avg_pixl_values[j];
         }
-        hidden_layer->bias[i] -= eta * error_list_of_hidden[i];
+        bias[i] -= delta;
     }
     return;
 }
