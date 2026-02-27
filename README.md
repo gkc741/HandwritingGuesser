@@ -10,6 +10,10 @@ Using Categorial Corss-Entropy Loss for the 10 classes i have to calculate the l
 
 For optimization im using Stochastic Gradient Descent for one sample at a time, with a learning rate of 0.02 - 5% each epoch.
 
+Using chace friendly data structes such as a collapsed list of weights, and implemented SIMD and parallelization to improve the speed of the training.
+
+Im getting ~98.3% accuracy rate on testing.
+
 ## Completed improvements
 
 - [x] Separate training and Inference
@@ -25,6 +29,7 @@ For optimization im using Stochastic Gradient Descent for one sample at a time, 
 
 ## For the future i want to
 
+- [ ] Improve chace locality on backprop using a transposed weigth matrix (collapsed ofc)
 - [ ] Expand to letters aswell using the EMNIST dataset
 - [ ] More layers generalized
 - [ ] Dropout regularization (layer-wise)
