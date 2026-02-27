@@ -21,6 +21,7 @@ For optimization im using Stochastic Gradient Descent for one sample at a time, 
 - [x] Move malloc/free out of the loop so it isnt called 60.000+ times
 - [x] Allow input from my own drawings
 - [x] Made a nice GUI to interact with it
+- [X] Implemented SIMD which gave a 25-30% speedup
 
 ## For the future i want to
 
