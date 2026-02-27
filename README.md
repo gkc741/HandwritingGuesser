@@ -8,7 +8,7 @@ Using ReLU on the hidden layer, and softmax on the output layer.
 
 Using Categorial Corss-Entropy Loss for the 10 classes i have to calculate the loss.
 
-For optimization im using Stochastic Gradient Descent for one sample at a time, with a fixed learning rate of 0.01 rn.
+For optimization im using Stochastic Gradient Descent for one sample at a time, with a learning rate of 0.02 - 5% each epoch.
 
 ## Completed improvements
 
@@ -24,7 +24,7 @@ For optimization im using Stochastic Gradient Descent for one sample at a time, 
 
 ## For the future i want to
 
-- [ ] Expand to letters aswell if i can find such a dataset
+- [ ] Expand to letters aswell using the EMNIST dataset
 - [ ] More layers generalized
 - [ ] Dropout regularization (layer-wise)
 - [ ] SGD with momentum (0.9) for better convergence
